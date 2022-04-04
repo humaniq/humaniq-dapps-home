@@ -1,1 +1,1 @@
-Humaniq Identirt Dapp
+Humaniq Identity Dapp
