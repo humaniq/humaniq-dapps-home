@@ -21,7 +21,14 @@ const ApiService = {
   /**
    */
   updateProfile: () => buildUrl(`/api/v${API_VERSION}/auth/login`),
-  getProfile: () => buildUrl(`/api/v${API_VERSION}/auth/login`),
+
+  /**
+   */
+  getProfile: (wallet: string) => buildUrl("introspect/signup/wallet", {
+    queryParams: {
+      wallet
+    }
+  }),
 };
 
 export default ApiService;

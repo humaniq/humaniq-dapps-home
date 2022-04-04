@@ -4,7 +4,7 @@ import { Method } from "../network/NetworkService"
 import ApiService from "../network/api/ApiService"
 import { RequestConfig } from "../network/models/RequestConfig"
 import { ProfileUpdateRequest } from "../network/requests"
-import { ProfileUpdateResponse } from "../network/responses"
+import { ProfileFetchResponse, ProfileUpdateResponse } from "../network/responses"
 import { HomeRepository } from "./types"
 
 export class HomeRepositoryImpl implements HomeRepository {
@@ -15,6 +15,15 @@ export class HomeRepositoryImpl implements HomeRepository {
       Method.POST,
       ApiService.updateProfile(),
       body,
+      null
+    )
+  }
+
+  fetchProfile(wallet: string): Future<BaseResponse<ProfileFetchResponse>> {
+    return new Future<BaseResponse<ProfileFetchResponse>>(
+      Method.GET,
+      ApiService.getProfile(wallet),
+      null,
       null
     )
   }

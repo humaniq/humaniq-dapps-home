@@ -94,6 +94,25 @@ class User extends BaseStore {
   fetchProfile = async () => {
     // some profile fetching
     this.isFetching = true;
+
+    const wallet = "some wallet id"
+    const disposable = this.repository.fetchProfile(wallet);
+    this.addDisposable(disposable);
+
+    try {
+      const result = await disposable.makeRequest();
+
+      if (result.isOkay()) {
+        //'Your profile successfully fetched'
+      } else {
+        // 'Server error'
+      }
+    } catch (e) {
+      Logcat.info("ERROR", e);
+    } finally {
+      this.clearDisposable(disposable);
+    }
+
     Logcat.info("fetching profile...");
     setTimeout(() => {
       runInAction(() => {
