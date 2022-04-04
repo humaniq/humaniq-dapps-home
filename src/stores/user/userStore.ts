@@ -158,6 +158,8 @@ class User extends BaseStore {
           birthDate: this.birthDate,
         } as ProfileUpdateRequest;
 
+        console.log("here");
+
         const disposable = this.repository.updateProfile(profileRequest);
         this.addDisposable(disposable);
 

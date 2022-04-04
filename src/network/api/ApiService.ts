@@ -1,6 +1,6 @@
-import buildUrl from 'build-url'
+import buildUrl from "build-url";
 
-export const API_URL = "https://api.node.psec.pro";
+export const API_URL = "https://signupbot.humaniq.com";
 
 export const ROUTES = {
   TX: {
@@ -12,15 +12,16 @@ export const ROUTES = {
   },
 };
 
-const API_VERSION = 1
+const API_VERSION = 1;
 
 /**
  * Endpoints
  */
-const ApiService =  {
+const ApiService = {
   /**
    */
-  updateProfile: () => buildUrl(`/api/v${ API_VERSION }/auth/login`)
-}
+  updateProfile: () => buildUrl(`/api/v${API_VERSION}/auth/login`),
+  getProfile: () => buildUrl(`/api/v${API_VERSION}/auth/login`),
+};
 
-export default ApiService
+export default ApiService;
