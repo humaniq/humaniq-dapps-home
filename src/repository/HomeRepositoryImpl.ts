@@ -19,12 +19,12 @@ export class HomeRepositoryImpl implements HomeRepository {
     )
   }
 
-  fetchProfile(wallet: string): Future<BaseResponse<ProfileFetchResponse>> {
+  fetchProfile(wallet: string, config?: RequestConfig): Future<BaseResponse<ProfileFetchResponse>> {
     return new Future<BaseResponse<ProfileFetchResponse>>(
       Method.GET,
       ApiService.getProfile(wallet),
       null,
-      null
+      config
     )
   }
 }

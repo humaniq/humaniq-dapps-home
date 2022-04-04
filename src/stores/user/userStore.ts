@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 import { HomeRepository } from "../../repository/types";
 import { ProfileUpdateRequest } from "../../network/requests";
 import { HomeRepositoryImpl } from "../../repository/HomeRepositoryImpl";
+import { RequestConfig } from "../../network/models/RequestConfig"
 
 // const test = {
 //   firstName: "Antonin",
@@ -95,8 +96,13 @@ class User extends BaseStore {
     // some profile fetching
     this.isFetching = true;
 
+    const config = {
+      headers: {
+        "x-auth-token": "XMaLhU75ZFklvAiV7yBZBNnlWsE9IowU"
+      }
+    } as RequestConfig
     const wallet = "some wallet id"
-    const disposable = this.repository.fetchProfile(wallet);
+    const disposable = this.repository.fetchProfile(wallet, config);
     this.addDisposable(disposable);
 
     try {

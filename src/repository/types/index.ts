@@ -9,5 +9,5 @@ export interface HomeRepository {
     body: ProfileUpdateRequest,
     config?: RequestConfig): Future<BaseResponse<ProfileUpdateResponse>>;
 
-  fetchProfile(wallet: string): Future<BaseResponse<ProfileFetchResponse>>;
+  fetchProfile(wallet: string, config?: RequestConfig): Future<BaseResponse<ProfileFetchResponse>>;
 }
