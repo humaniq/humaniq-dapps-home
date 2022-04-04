@@ -1,0 +1,17 @@
+{
+  "appName": "Humaniq Identity dAPP",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "update": "Update",
+  "profileUpdate": "Profile Update",
+  "yourProfile": "Your Profile",
+  "country": "Country",
+  "city": "City",
+  "birthDate": "Birth Date",
+  "changeAvatar": "Change Avatar",
+  "loading": "Loading...",
+  "notAllowed": "Not allowed. Sorry...",
+  "walletNotConnected": "Seems like your Wallet not connected",
+  "connectWallet": "Connect your Wallet with this dApp",
+  "emptyField": "Field cannot be empty"
+}
