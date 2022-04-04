@@ -1,1 +1,1 @@
-Humaniq dApps React template
+Humaniq Identirt Dapp
