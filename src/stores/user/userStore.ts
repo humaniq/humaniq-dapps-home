@@ -9,11 +9,8 @@ import {
 import { getProviderStore } from "../../App";
 import { isEmpty } from "../../utils/textUtils";
 import Logcat from "../../logcat/Logcat";
-import moment from "moment";
-import { dateFormat } from "../../utils/general";
 import { t } from "i18next";
 import dayjs from "dayjs";
-import { RefObject } from "react";
 import { HomeRepository } from "../../repository/types";
 import { ProfileUpdateRequest } from "../../network/requests";
 import { HomeRepositoryImpl } from "../../repository/HomeRepositoryImpl";
@@ -55,10 +52,7 @@ class User extends BaseStore {
 
   @computed
   get getBirthDate() {
-    return moment(
-      !isEmpty(this.birthDate) ? this.birthDate : dayjs().format(dateFormat),
-      dateFormat
-    );
+    return !isEmpty(this.birthDate) ? dayjs(this.birthDate) : dayjs();
   }
 
   @computed

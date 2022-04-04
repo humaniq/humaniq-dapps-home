@@ -1,14 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { observer } from "mobx-react";
-import {
-  Avatar,
-  Button,
-  Card,
-  DatePicker,
-  Space,
-  Spin,
-  Typography,
-} from "antd";
+import { Avatar, Button, Card, Space, Spin, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import { dateFormat } from "../../utils/general";
 import { FormInput } from "../../components/input/FormInput";
@@ -16,24 +8,21 @@ import colors from "../../utils/colors";
 import withStore from "../../hoc/withStore";
 import { HomeViewModel } from "./HomeViewModel";
 import { UserStore as user } from "../../stores/user/userStore";
+import DatePicker from "../../components/date-picker/date-picker";
 
 export interface HomeScreenInterface {
-  view: HomeViewModel;
+  store: HomeViewModel;
 }
 
-const HomeImpl = ({ view }: HomeScreenInterface) => {
+const HomeImpl = ({ store: view }: HomeScreenInterface) => {
   const { t } = useTranslation();
   const inputGalleryRef = useRef<any>();
 
   useEffect(() => {
     (async () => {
-      console.log(view);
-      view.setGalleryRef(inputGalleryRef);
-      await user.fetchProfile();
+      await view.init();
     })();
-
-    // return () => view.onDestroy()
-  }, [view]);
+  }, []);
 
   if (user.isFetching) {
     return (
@@ -68,11 +57,21 @@ const HomeImpl = ({ view }: HomeScreenInterface) => {
 
         <Avatar size={100} src={user.avatar} />
 
-        {/*<input onChange={ view.onFileChoose } accept="image/*" type="file" id="file"*/}
-        {/*       ref={ inputGalleryRef }*/}
-        {/*       style={ { display: "none" } }/>*/}
-        {/*<Button onClick={ view.openFileExplorer } size={ "small" }*/}
-        {/*        style={ { marginBottom: 20 } }>{ t("changeAvatar") }</Button>*/}
+        <input
+          onChange={view.onFileChoose}
+          accept="image/*"
+          type="file"
+          id="file"
+          ref={inputGalleryRef}
+          style={{ display: "none" }}
+        />
+        <Button
+          onClick={view.openFileExplorer}
+          size={"small"}
+          style={{ marginBottom: 20 }}
+        >
+          {t("changeAvatar")}
+        </Button>
 
         <FormInput
           title={t("firstName")}

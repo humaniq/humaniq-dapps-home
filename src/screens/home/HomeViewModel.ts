@@ -1,6 +1,7 @@
 import { RefObject } from "react";
 import { makeAutoObservable } from "mobx";
 import Logcat from "../../logcat/Logcat";
+import { UserStore as user } from "../../stores/user/userStore";
 
 export class HomeViewModel {
   private galleryRef?: RefObject<HTMLInputElement>;
@@ -9,8 +10,9 @@ export class HomeViewModel {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  setGalleryRef = (ref?: RefObject<HTMLInputElement>) => {
+  init = async (ref?: RefObject<HTMLInputElement>) => {
     this.galleryRef = ref;
+    await user.fetchProfile();
   };
 
   openFileExplorer = () => {
