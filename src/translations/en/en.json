@@ -13,5 +13,10 @@
   "notAllowed": "Not allowed. Sorry...",
   "walletNotConnected": "Seems like your Wallet not connected",
   "connectWallet": "Connect your Wallet with this dApp",
-  "emptyField": "Field cannot be empty"
+  "emptyField": "Field cannot be empty",
+  "userProfile": {
+    "successUpdate": "Your profile successfully updated",
+    "errorUpdate": "Error update profile",
+    "errorSign": "Sign message was rejected"
+  }
 }

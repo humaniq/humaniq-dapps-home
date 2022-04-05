@@ -1,7 +1,8 @@
 import { RefObject } from "react";
-import { makeAutoObservable } from "mobx";
-import Logcat from "../../logcat/Logcat";
-import { UserStore as user } from "../../stores/user/userStore";
+import { makeAutoObservable, reaction } from "mobx";
+import Logcat from "../../utils/logcat";
+import { UserStore, UserStore as user } from "../../stores/user/userStore";
+import { ETHProvider } from "../../stores/provider/providerStore";
 
 export class HomeViewModel {
   private galleryRef?: RefObject<HTMLInputElement>;
@@ -13,6 +14,16 @@ export class HomeViewModel {
   init = async (ref?: RefObject<HTMLInputElement>) => {
     this.galleryRef = ref;
     await user.fetchProfile();
+    reaction(
+      () => ETHProvider.currentAccount,
+      async (val) => {
+        if (val) {
+          await user.fetchProfile();
+        } else {
+          UserStore.onReset();
+        }
+      }
+    );
   };
 
   openFileExplorer = () => {

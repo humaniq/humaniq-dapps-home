@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Layout } from "antd";
+import { Button, Dropdown, Layout, Menu } from "antd";
 import { useTranslation } from "react-i18next";
 import colors from "../../utils/colors";
 import { getProviderStore } from "../../App";
@@ -26,17 +26,44 @@ const Header = () => {
       >
         {t("appName")}
       </span>
-      <Button
-        type={"primary"}
-        disabled={!getProviderStore.hasProvider}
-        onClick={async () => {
-          if (!getProviderStore.currentAccount) {
-            await getProviderStore.connect();
+      {getProviderStore.currentAccount ? (
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item key={"logout"}>
+                <div onClick={getProviderStore.disconnect}>logout</div>
+              </Menu.Item>
+            </Menu>
           }
-        }}
-      >
-        {renderShortAddress(getProviderStore.currentAccount) || "not connected"}
-      </Button>
+          placement="bottomLeft"
+        >
+          <Button
+            type={"primary"}
+            disabled={!getProviderStore.hasProvider}
+            onClick={async () => {
+              if (!getProviderStore.currentAccount) {
+                await getProviderStore.connect();
+              }
+            }}
+          >
+            {renderShortAddress(getProviderStore.currentAccount) ||
+              "not connected"}
+          </Button>
+        </Dropdown>
+      ) : (
+        <Button
+          type={"primary"}
+          disabled={!getProviderStore.hasProvider}
+          onClick={async () => {
+            if (!getProviderStore.currentAccount) {
+              await getProviderStore.connect();
+            }
+          }}
+        >
+          {renderShortAddress(getProviderStore.currentAccount) ||
+            "not connected"}
+        </Button>
+      )}
     </Layout.Header>
   );
 };

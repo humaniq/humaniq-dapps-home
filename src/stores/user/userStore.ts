@@ -1,132 +1,91 @@
-import BaseStore from "../base/baseStore";
-import {
-  action,
-  computed,
-  makeObservable,
-  observable,
-  runInAction,
-} from "mobx";
+import { action, makeAutoObservable } from "mobx";
 import { getProviderStore } from "../../App";
 import { isEmpty } from "../../utils/textUtils";
-import Logcat from "../../logcat/Logcat";
+import Logcat from "../../utils/logcat";
 import { t } from "i18next";
 import dayjs from "dayjs";
-import { HomeRepository } from "../../repository/types";
-import { ProfileUpdateRequest } from "../../network/requests";
-import { HomeRepositoryImpl } from "../../repository/HomeRepositoryImpl";
-import { RequestConfig } from "../../network/models/RequestConfig"
+import { ApiService } from "../../services/apiService/apiService";
+import {
+  API_HUMANIQ_TOKEN,
+  API_HUMANIQ_URL,
+  HUMANIQ_ROUTES,
+} from "../../constants/api";
+import { UserProfileResponse } from "../../services/apiService/responses";
+import { DATE_FORMAT } from "../../constants/general";
+import { message } from "antd";
 
-// const test = {
-//   firstName: "Antonin",
-//   lastName: "Antuanov",
-//   country: "Uzbekistan",
-//   city: "Tashkent",
-//   birthDate: "10.10.1993",
-//   hmqIDCode: "3GLBe",
-//   avatar: "https://files.salebot.pro/uploads/message_files/8c5826b6-3f24-4efa-a7c6-4c150dadcd20.jpg"
-// }
+class User {
+  firstName = "";
+  lastName = "";
+  country = "";
+  city = "";
+  birthDate = "";
 
-class User extends BaseStore {
-  @observable firstName = "";
-  @observable lastName = "";
-  @observable country = "";
-  @observable city = "";
-  @observable birthDate = "";
+  firstNameError?: string;
+  lastNameError?: string;
+  countryError?: string;
+  cityError?: string;
+  birthDateError?: string;
 
-  @observable firstNameError?: string;
-  @observable lastNameError?: string;
-  @observable countryError?: string;
-  @observable cityError?: string;
-  @observable birthDateError?: string;
+  photoURI = "";
+  isFetching = false;
 
-  @observable hmqIDCode = "";
-  @observable avatar = "";
-  @observable isFetching = false;
-
-  private readonly repository: HomeRepository;
+  api: ApiService;
 
   constructor() {
-    super();
-    makeObservable(this);
-    this.repository = new HomeRepositoryImpl();
+    makeAutoObservable(this);
+    this.api = new ApiService();
+    this.api.init(API_HUMANIQ_URL, { "x-auth-token": API_HUMANIQ_TOKEN });
   }
 
-  @computed
   get getBirthDate() {
-    return !isEmpty(this.birthDate) ? dayjs(this.birthDate) : dayjs();
+    return !isEmpty(this.birthDate)
+      ? dayjs(this.birthDate, DATE_FORMAT)
+      : dayjs();
   }
 
-  @computed
   get buttonDisabled() {
     return this.isAnyFieldEmpty();
   }
 
-  @action
   setFirstName = (value: string) => {
     this.firstNameError = undefined;
     this.firstName = value;
   };
 
-  @action
   setLastName = (value: string) => {
     this.lastNameError = undefined;
     this.lastName = value;
   };
 
-  @action
   setCountry = (value: string) => {
     this.countryError = undefined;
     this.country = value;
   };
 
-  @action
   setCity = (value: string) => {
     this.cityError = undefined;
     this.city = value;
   };
 
-  @action
   setBirthDate = (value: string) => {
     this.birthDateError = undefined;
     this.birthDate = value;
   };
 
-  @action
   fetchProfile = async () => {
     // some profile fetching
     this.isFetching = true;
-
-    const config = {
-      headers: {
-        "x-auth-token": "XMaLhU75ZFklvAiV7yBZBNnlWsE9IowU"
-      }
-    } as RequestConfig
-    const wallet = "some wallet id"
-    const disposable = this.repository.fetchProfile(wallet, config);
-    this.addDisposable(disposable);
-
-    try {
-      const result = await disposable.makeRequest();
-
-      if (result.isOkay()) {
-        //'Your profile successfully fetched'
-      } else {
-        // 'Server error'
-      }
-    } catch (e) {
-      Logcat.info("ERROR", e);
-    } finally {
-      this.clearDisposable(disposable);
+    const result = await this.api.get(
+      HUMANIQ_ROUTES.INTROSPECT.GET_SIGNUP_WALLET,
+      { wallet: getProviderStore.currentAccount }
+    );
+    if (result.isOk) {
+      this.setProfileUser(result.data);
+    } else {
+      Logcat.info("ERROR", result);
     }
-
-    Logcat.info("fetching profile...");
-    setTimeout(() => {
-      runInAction(() => {
-        // this.setProfileUser(test)
-        this.isFetching = false;
-      });
-      Logcat.info("fetching profile... done");
-    }, 3000);
+    this.isFetching = false;
   };
 
   @action
@@ -155,66 +114,52 @@ class User extends BaseStore {
       return;
     }
 
+    const timeStamp = new Date().getTime();
+    const request = `ADDRESS ${getProviderStore.currentAccount} UPDATE PERSONAL INFO TIMESTAMP ${timeStamp}`;
     try {
-      const timeStamp = new Date().getTime();
-      const request = `ADDRESS ${getProviderStore.currentAccount} UPDATE PERSONAL INFO TIMESTAMP ${timeStamp}`;
-      Logcat.info("Personal message: ", request);
       const result = await getProviderStore.personalMessageRequest(request);
       if (result) {
-        // const data = {
-        //   query: {
-        //     addressFrom: getProviderStore.currentAccount,
-        //     timeStamp,
-        //     typeOperation: "UPSERT",
-        //     typeMessage: "humaniqIdentity",
-        //     payload: {
-        //       lastName: this.lastName,
-        //       firstName: this.firstName
-        //     }
-        //   },
-        //   signature: result
-        // }
-
-        const profileRequest = {
-          firstName: this.firstName,
-          lastName: this.lastName,
-          country: this.country,
-          city: this.city,
-          birthDate: this.birthDate,
-        } as ProfileUpdateRequest;
-
-        console.log("here");
-
-        const disposable = this.repository.updateProfile(profileRequest);
-        this.addDisposable(disposable);
-
-        try {
-          const result = await disposable.makeRequest();
-
-          if (result.isOkay()) {
-            //'Your profile successfully updated'
-          } else {
-            // 'Server error'
-          }
-        } catch (e) {
-          Logcat.info("ERROR", e);
-        } finally {
-          this.clearDisposable(disposable);
+        const body = {
+          query: {
+            addressFrom: getProviderStore.currentAccount,
+            timeStamp,
+            typeOperation: "UPSERT",
+            typeMessage: "humaniqIdentity",
+            payload: {
+              lastName: this.lastName,
+              firstName: this.firstName,
+              birthDate: this.birthDate,
+              city: this.city,
+              country: this.country,
+            },
+          },
+          signature: result,
+        };
+        const response = await this.api.post(
+          HUMANIQ_ROUTES.DAPP.POST_PROFILE_UPDATE,
+          body
+        );
+        if (response.isOk) {
+          message.success(t("userProfile.successUpdate"));
+        } else {
+          message.error(t("userProfile.errorUpdate"));
+          Logcat.info("ERROR", response);
         }
       }
     } catch (e) {
+      message.error(t("userProfile.errorSign"));
       Logcat.info(e);
     }
   };
 
   @action
-  setProfileUser = (test: any) => {
+  setProfileUser = (test: UserProfileResponse) => {
     this.firstName = test.firstName;
     this.lastName = test.lastName;
     this.country = test.country;
     this.city = test.city;
     this.birthDate = test.birthDate;
-    this.avatar = test.avatar;
+    this.photoURI = test.photoURI;
   };
 
   @action
@@ -224,12 +169,12 @@ class User extends BaseStore {
     this.country = "";
     this.city = "";
     this.birthDate = "";
-    this.hmqIDCode = "";
+    this.photoURI = "";
   };
 
   isAnyFieldEmpty = () =>
     isEmpty(this.firstName) ||
-    isEmpty(this.lastNameError) ||
+    isEmpty(this.lastName) ||
     isEmpty(this.country) ||
     isEmpty(this.city) ||
     isEmpty(this.birthDate);

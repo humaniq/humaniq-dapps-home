@@ -2,14 +2,14 @@ import React, { useEffect, useRef } from "react";
 import { observer } from "mobx-react";
 import { Avatar, Button, Card, Space, Spin, Typography } from "antd";
 import { useTranslation } from "react-i18next";
-import { dateFormat } from "../../utils/general";
+import { DATE_FORMAT } from "../../constants/general";
 import { FormInput } from "../../components/input/FormInput";
 import colors from "../../utils/colors";
-import withStore from "../../hoc/withStore";
 import { HomeViewModel } from "./HomeViewModel";
 import { UserStore as user } from "../../stores/user/userStore";
 import DatePicker from "../../components/date-picker/date-picker";
 import { Content } from "antd/es/layout/layout";
+import { withStore } from "../../utils/hoc";
 
 export interface HomeScreenInterface {
   store: HomeViewModel;
@@ -23,7 +23,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
     (async () => {
       await view.init(inputGalleryRef);
     })();
-  }, []);
+  }, [view]);
 
   if (user.isFetching) {
     return (
@@ -47,33 +47,33 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
 
   return (
     <Content>
-      <Card
+      <div
         style={{
           textAlign: "center",
-          marginBottom: 24,
+          margin: 24,
           borderWidth: 0,
         }}
       >
         <Space direction="vertical">
           <Typography.Title level={1}>{t("yourProfile")}</Typography.Title>
 
-          <Avatar size={100} src={user.avatar} />
+          <Avatar size={100} src={user.photoURI} />
 
-          <input
-            onChange={view.onFileChoose}
-            accept="image/*"
-            type="file"
-            id="file"
-            ref={inputGalleryRef}
-            style={{ display: "none" }}
-          />
-          <Button
-            onClick={view.openFileExplorer}
-            size={"small"}
-            style={{ marginBottom: 20 }}
-          >
-            {t("changeAvatar")}
-          </Button>
+          {/*<input*/}
+          {/*  onChange={ view.onFileChoose }*/}
+          {/*  accept="image/*"*/}
+          {/*  type="file"*/}
+          {/*  id="file"*/}
+          {/*  ref={ inputGalleryRef }*/}
+          {/*  style={ { display: "none" } }*/}
+          {/*/>*/}
+          {/*<Button*/}
+          {/*  onClick={ view.openFileExplorer }*/}
+          {/*  size={ "small" }*/}
+          {/*  style={ { marginBottom: 20 } }*/}
+          {/*>*/}
+          {/*  { t("changeAvatar") }*/}
+          {/*</Button>*/}
 
           <FormInput
             title={t("firstName")}
@@ -115,7 +115,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
                   : {}
               }
               defaultValue={user.getBirthDate}
-              format={dateFormat}
+              format={DATE_FORMAT}
             />
           </Space>
 
@@ -128,7 +128,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
             {t("update")}
           </Button>
         </Space>
-      </Card>
+      </div>
     </Content>
   );
 };
