@@ -11,6 +11,7 @@ const Header = () => {
   return (
     <Layout.Header
       style={{
+        padding: "0 25px",
         textAlign: "center",
         backgroundColor: colors.primary,
         color: colors.white,
@@ -22,6 +23,7 @@ const Header = () => {
       <span
         style={{
           fontSize: 22,
+          lineHeight: 24,
         }}
       >
         {t("appName")}
