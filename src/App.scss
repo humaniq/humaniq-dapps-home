@@ -1,18 +1,9 @@
-.App {
-  height: 100%;
-}
-
-.site-layout {
-  margin-top: 15px;
-  padding: 0 50px;
-  height: 100%;
-}
-
-.site-content {
-  height: 100%;
-}
-
 // global
+
+.App {
+  min-height: 100%;
+}
+
 @import "./styles/colors";
 @import "./styles/antd-custom";
 @import "./styles/global";
