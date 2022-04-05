@@ -1,6 +1,6 @@
 class StringBuilder {
   private stringsArray: string[];
-  private separator: string = '';
+  private separator: string = "";
 
   constructor() {
     this.stringsArray = [];

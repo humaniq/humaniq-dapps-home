@@ -1,99 +1,136 @@
-import React, { useEffect, useRef } from "react"
-import { observer } from "mobx-react"
-import { Button, Card, Space, Typography, DatePicker, Avatar, Spin } from "antd"
-import { useTranslation } from "react-i18next"
-import HomeStore from "../../stores/home/homeStore"
-import { dateFormat } from "../../utils/general"
-import { FormInput } from "../../components/input/FormInput"
-import colors from "../../utils/colors"
-import withStore from "../../hoc/withStore"
+import React, { useEffect, useRef } from "react";
+import { observer } from "mobx-react";
+import { Avatar, Button, Card, Space, Spin, Typography } from "antd";
+import { useTranslation } from "react-i18next";
+import { DATE_FORMAT } from "../../constants/general";
+import { FormInput } from "../../components/input/FormInput";
+import colors from "../../utils/colors";
+import { HomeViewModel } from "./HomeViewModel";
+import { UserStore as user } from "../../stores/user/userStore";
+import DatePicker from "../../components/date-picker/date-picker";
+import { Content } from "antd/es/layout/layout";
+import { withStore } from "../../utils/hoc";
 
 export interface HomeScreenInterface {
-  store: HomeStore
+  store: HomeViewModel;
 }
 
-const HomeImpl = ({ store: homeStore }: HomeScreenInterface) => {
-  const { t } = useTranslation()
-  const inputGalleryRef = useRef<any>()
+const HomeImpl = ({ store: view }: HomeScreenInterface) => {
+  const { t } = useTranslation();
+  const inputGalleryRef = useRef<any>();
 
   useEffect(() => {
-    ;(async () => {
-      homeStore.setGalleryRef(inputGalleryRef)
-      await homeStore.fetchProfile()
-    })()
+    (async () => {
+      await view.init(inputGalleryRef);
+    })();
+  }, [view]);
 
-    return () => homeStore.onDestroy()
-  }, [homeStore])
-
-  if (homeStore.isFetching) {
+  if (user.isFetching) {
     return (
-      <Card style={ {
-        display: "flex",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        minWidth: 300,
-        borderWidth: 0
-      } }>
-        <Space direction={ "horizontal" }>
-          <Spin/>
-          <Typography.Title level={ 3 }>{ t("loading") }</Typography.Title>
+      <Card
+        style={{
+          display: "flex",
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: 300,
+          borderWidth: 0,
+        }}
+      >
+        <Space direction={"horizontal"}>
+          <Spin />
+          <Typography.Title level={3}>{t("loading")}</Typography.Title>
         </Space>
       </Card>
-    )
+    );
   }
 
   return (
-    <Card style={ {
-      textAlign: "center",
-      marginBottom: 24,
-      borderWidth: 0
-    } }>
-      <Space direction="vertical">
-        <Typography.Title level={ 1 }>{ t("yourProfile") }</Typography.Title>
+    <Content>
+      <div
+        style={{
+          textAlign: "center",
+          margin: 24,
+          borderWidth: 0,
+        }}
+      >
+        <Space direction="vertical">
+          <Typography.Title level={1}>{t("yourProfile")}</Typography.Title>
 
-        <Avatar size={ 100 }
-                src={ homeStore.avatar }/>
+          <Avatar size={100} src={user.photoURI} />
 
-        <input onChange={ homeStore.onFileChoose } accept="image/*" type="file" id="file"
-               ref={ inputGalleryRef }
-               style={ { display: "none" } }/>
-        <Button onClick={ homeStore.openFileExplorer } size={ "small" }
-                style={ { marginBottom: 20 } }>{ t("changeAvatar") }</Button>
+          {/*<input*/}
+          {/*  onChange={ view.onFileChoose }*/}
+          {/*  accept="image/*"*/}
+          {/*  type="file"*/}
+          {/*  id="file"*/}
+          {/*  ref={ inputGalleryRef }*/}
+          {/*  style={ { display: "none" } }*/}
+          {/*/>*/}
+          {/*<Button*/}
+          {/*  onClick={ view.openFileExplorer }*/}
+          {/*  size={ "small" }*/}
+          {/*  style={ { marginBottom: 20 } }*/}
+          {/*>*/}
+          {/*  { t("changeAvatar") }*/}
+          {/*</Button>*/}
 
-        <FormInput title={ t("firstName") } input={ homeStore.firstName }
-                   onChange={ homeStore.setFirstName }
-                   error={ homeStore.firstNameError }/>
+          <FormInput
+            title={t("firstName")}
+            input={user.firstName}
+            onChange={user.setFirstName}
+            error={user.firstNameError}
+          />
 
-        <FormInput title={ t("lastName") } input={ homeStore.lastName }
-                   onChange={ homeStore.setLastName }
-                   error={ homeStore.lastNameError }/>
+          <FormInput
+            title={t("lastName")}
+            input={user.lastName}
+            onChange={user.setLastName}
+            error={user.lastNameError}
+          />
 
-        <FormInput title={ t("country") } input={ homeStore.country }
-                   onChange={ homeStore.setCountry }
-                   error={ homeStore.countryError }/>
+          <FormInput
+            title={t("country")}
+            input={user.country}
+            onChange={user.setCountry}
+            error={user.countryError}
+          />
 
-        <FormInput title={ t("city") } input={ homeStore.city }
-                   onChange={ homeStore.setCity }
-                   error={ homeStore.cityError }/>
+          <FormInput
+            title={t("city")}
+            input={user.city}
+            onChange={user.setCity}
+            error={user.cityError}
+          />
 
-        <Space direction="vertical" size={ 12 }>
-          <Typography.Text>{ t("birthDate") }</Typography.Text>
-          <DatePicker
-            onChange={ (value: any, dateString: string) => {
-              homeStore.setBirthDate(dateString)
-            } }
-            style={ homeStore.birthDateError ? { borderWidth: 1, borderColor: colors.error } : {} }
-            defaultValue={ homeStore.getBirthDate } format={ dateFormat }/>
+          <Space direction="vertical" size={12}>
+            <Typography.Text>{t("birthDate")}</Typography.Text>
+            <DatePicker
+              onChange={(value: any, dateString: string) => {
+                user.setBirthDate(dateString);
+              }}
+              style={
+                user.birthDateError
+                  ? { borderWidth: 1, borderColor: colors.error }
+                  : {}
+              }
+              defaultValue={user.getBirthDate}
+              format={DATE_FORMAT}
+            />
+          </Space>
+
+          <Button
+            onClick={user.onSubmit}
+            size={"large"}
+            style={{ marginTop: 30, width: "100%" }}
+            type="primary"
+          >
+            {t("update")}
+          </Button>
         </Space>
+      </div>
+    </Content>
+  );
+};
 
-        <Button onClick={ homeStore.onSubmit } size={ "large" } style={ { marginTop: 30, width: '100%' } }
-                type="primary">
-          { t("update") }
-        </Button>
-      </Space>
-    </Card>
-  )
-}
-
-export const Home = withStore(HomeStore, observer(HomeImpl))
+export const Home = withStore(HomeViewModel, observer(HomeImpl));
