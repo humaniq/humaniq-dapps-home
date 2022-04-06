@@ -1,5 +1,5 @@
 import { RefObject } from "react";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeObservable, reaction } from "mobx";
 import { UserStore, UserStore as user } from "../../stores/user/userStore";
 import { ETHProvider } from "../../stores/provider/providerStore";
 
@@ -7,7 +7,7 @@ export class HomeViewModel {
   private galleryRef?: RefObject<HTMLInputElement>;
 
   constructor() {
-    makeAutoObservable(this, {}, { autoBind: true });
+    makeObservable(this, {}, { autoBind: true });
   }
 
   init = async (ref?: RefObject<HTMLInputElement>) => {

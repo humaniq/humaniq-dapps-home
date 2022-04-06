@@ -19,9 +19,16 @@
   "connect": "Connect",
   "notConnected": "Not connected",
   "photoUploading": "Photo is uploading",
+  "uploading": "Uploading",
   "userProfile": {
     "successUpdate": "Your profile successfully updated",
     "errorUpdate": "Error update profile",
-    "errorSign": "Sign message was rejected"
+    "errorSign": "Sign message was rejected",
+    "form": {
+      "firstNameHint": "Enter your name",
+      "lastNameHint": "Enter your lastname",
+      "countryHint": "Enter your country",
+      "cityHint": "Enter your city"
+    }
   }
 }

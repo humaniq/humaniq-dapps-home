@@ -73,24 +73,31 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
             <Avatar size={100} src={user.photoURI} />
           )}
 
-          {!user.photoUploading && (
-            <Space align={"center"}>
-              <input
-                onChange={view.onFileChoose}
-                accept="image/*"
-                type="file"
-                id="file"
-                ref={inputGalleryRef}
-                style={{ alignSelf: "center", textAlign: "center" }}
-              />
-            </Space>
-          )}
+          <input
+            type="file"
+            ref={inputGalleryRef}
+            onChange={view.onFileChoose}
+            hidden
+          />
+
+          <Button
+            onClick={view.openFileExplorer}
+            size={"middle"}
+            style={{ marginBottom: 10 }}
+            type="primary"
+            color={colors.textGrey}
+            loading={user.photoUploading}
+            disabled={user.photoUploading}
+          >
+            {user.photoUploading ? t("uploading") : t("changeAvatar")}
+          </Button>
 
           <FormInput
             title={t("firstName")}
             input={user.firstName}
             onChange={user.setFirstName}
             error={user.firstNameError}
+            hint={t("userProfile.form.firstNameHint")}
           />
 
           <FormInput
@@ -98,6 +105,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
             input={user.lastName}
             onChange={user.setLastName}
             error={user.lastNameError}
+            hint={t("userProfile.form.lastNameHint")}
           />
 
           <FormInput
@@ -105,6 +113,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
             input={user.country}
             onChange={user.setCountry}
             error={user.countryError}
+            hint={t("userProfile.form.countryHint")}
           />
 
           <FormInput
@@ -112,6 +121,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
             input={user.city}
             onChange={user.setCity}
             error={user.cityError}
+            hint={t("userProfile.form.cityHint")}
           />
 
           <Space direction="vertical" size={12}>
