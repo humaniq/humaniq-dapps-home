@@ -1,22 +1,22 @@
 class Logcat {
   static log(msg: any, ...optionalParams: any[]) {
-    console.log(msg);
+    console.log(msg, optionalParams);
   }
 
   static debug(msg: any, ...optionalParams: any[]) {
-    console.debug(msg);
+    console.debug(msg, optionalParams);
   }
 
   static error(msg: any, err: any, ...optionalParams: any[]) {
-    console.error(msg, err);
+    console.error(msg, err, optionalParams);
   }
 
   static info(msg: any, ...optionalParams: any[]) {
-    console.info(msg);
+    console.info(msg, optionalParams);
   }
 
   static warning(msg: any, ...optionalParams: any[]) {
-    console.warn(msg);
+    console.warn(msg, optionalParams);
   }
 }
 

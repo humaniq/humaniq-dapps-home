@@ -9,3 +9,14 @@ export interface UserProfileResponse {
   photoURI: string;
   uid: string;
 }
+
+export interface UserProfileUpdateResponse {
+  status: string;
+  message: string;
+  uid: string;
+}
+
+export interface UserPhotoUpdateResponse {
+  status: string;
+  url: string;
+}

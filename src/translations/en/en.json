@@ -1,5 +1,5 @@
 {
-  "appName": "Humaniq Identity",
+  "appName": "HumaniqID",
   "firstName": "First name",
   "lastName": "Last name",
   "update": "Update",
@@ -8,15 +8,27 @@
   "country": "Country",
   "city": "City",
   "birthDate": "Birth Date",
-  "changeAvatar": "Change Avatar",
+  "changeAvatar": "Change Photo",
   "loading": "Loading...",
-  "notAllowed": "Not allowed. Sorry...",
+  "notFound": "404...Page Not Found",
   "walletNotConnected": "Seems like your Wallet not connected",
-  "connectWallet": "Connect your Wallet with this dApp",
+  "connectWallet": "Connect your Wallet",
   "emptyField": "Field cannot be empty",
+  "logout": "Logout",
+  "disconnect": "Disconnect",
+  "connect": "Connect",
+  "notConnected": "Not connected",
+  "photoUploading": "Photo is uploading",
+  "uploading": "Uploading",
   "userProfile": {
     "successUpdate": "Your profile successfully updated",
     "errorUpdate": "Error update profile",
-    "errorSign": "Sign message was rejected"
+    "errorSign": "Sign message was rejected",
+    "form": {
+      "firstNameHint": "Enter your name",
+      "lastNameHint": "Enter your lastname",
+      "countryHint": "Enter your country",
+      "cityHint": "Enter your city"
+    }
   }
 }

@@ -57,29 +57,47 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
         <Space direction="vertical">
           <Typography.Title level={1}>{t("yourProfile")}</Typography.Title>
 
-          <Avatar size={100} src={user.photoURI} />
+          {user.photoUploading ? (
+            <Space
+              align={"center"}
+              style={{
+                width: 100,
+                height: 100,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Spin size={"large"} />
+            </Space>
+          ) : (
+            <Avatar size={100} src={user.photoURI} />
+          )}
 
-          {/*<input*/}
-          {/*  onChange={ view.onFileChoose }*/}
-          {/*  accept="image/*"*/}
-          {/*  type="file"*/}
-          {/*  id="file"*/}
-          {/*  ref={ inputGalleryRef }*/}
-          {/*  style={ { display: "none" } }*/}
-          {/*/>*/}
-          {/*<Button*/}
-          {/*  onClick={ view.openFileExplorer }*/}
-          {/*  size={ "small" }*/}
-          {/*  style={ { marginBottom: 20 } }*/}
-          {/*>*/}
-          {/*  { t("changeAvatar") }*/}
-          {/*</Button>*/}
+          <input
+            type="file"
+            ref={inputGalleryRef}
+            onChange={view.onFileChoose}
+            hidden
+          />
+
+          <Button
+            onClick={view.openFileExplorer}
+            size={"middle"}
+            style={{ marginBottom: 10 }}
+            type="primary"
+            color={colors.textGrey}
+            loading={user.photoUploading}
+            disabled={user.photoUploading}
+          >
+            {user.photoUploading ? t("uploading") : t("changeAvatar")}
+          </Button>
 
           <FormInput
             title={t("firstName")}
             input={user.firstName}
             onChange={user.setFirstName}
             error={user.firstNameError}
+            hint={t("userProfile.form.firstNameHint")}
           />
 
           <FormInput
@@ -87,6 +105,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
             input={user.lastName}
             onChange={user.setLastName}
             error={user.lastNameError}
+            hint={t("userProfile.form.lastNameHint")}
           />
 
           <FormInput
@@ -94,6 +113,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
             input={user.country}
             onChange={user.setCountry}
             error={user.countryError}
+            hint={t("userProfile.form.countryHint")}
           />
 
           <FormInput
@@ -101,6 +121,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
             input={user.city}
             onChange={user.setCity}
             error={user.cityError}
+            hint={t("userProfile.form.cityHint")}
           />
 
           <Space direction="vertical" size={12}>
