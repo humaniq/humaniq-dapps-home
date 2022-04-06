@@ -11,7 +11,7 @@ import b from "buffer";
 import { observer } from "mobx-react";
 import { Layout } from "antd";
 import { WalletNotConnected } from "./components/app/WalletNotConnected";
-import { ProviderNotInjected } from "./components/app/ProviderNotInjected";
+import { ProviderNotFound } from "./components/app/ProviderNotFound";
 import { ETHProvider } from "./stores/provider/providerStore";
 
 window.Buffer = b.Buffer;
@@ -40,11 +40,11 @@ export const App = observer(() => {
                   </Routes>
                 </Router>
               ) : (
-                <WalletNotConnected onClick={getProviderStore.connect} />
+                <WalletNotConnected />
               )}
             </>
           ) : (
-            <ProviderNotInjected />
+            <ProviderNotFound />
           )}
         </>
       ) : null}

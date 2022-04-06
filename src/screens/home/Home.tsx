@@ -57,23 +57,34 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
         <Space direction="vertical">
           <Typography.Title level={1}>{t("yourProfile")}</Typography.Title>
 
-          <Avatar size={100} src={user.photoURI} />
+          {user.photoUploading ? (
+            <Space
+              align={"center"}
+              style={{
+                width: 100,
+                height: 100,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Spin size={"large"} />
+            </Space>
+          ) : (
+            <Avatar size={100} src={user.photoURI} />
+          )}
 
-          {/*<input*/}
-          {/*  onChange={ view.onFileChoose }*/}
-          {/*  accept="image/*"*/}
-          {/*  type="file"*/}
-          {/*  id="file"*/}
-          {/*  ref={ inputGalleryRef }*/}
-          {/*  style={ { display: "none" } }*/}
-          {/*/>*/}
-          {/*<Button*/}
-          {/*  onClick={ view.openFileExplorer }*/}
-          {/*  size={ "small" }*/}
-          {/*  style={ { marginBottom: 20 } }*/}
-          {/*>*/}
-          {/*  { t("changeAvatar") }*/}
-          {/*</Button>*/}
+          {!user.photoUploading && (
+            <Space align={"center"}>
+              <input
+                onChange={view.onFileChoose}
+                accept="image/*"
+                type="file"
+                id="file"
+                ref={inputGalleryRef}
+                style={{ alignSelf: "center", textAlign: "center" }}
+              />
+            </Space>
+          )}
 
           <FormInput
             title={t("firstName")}

@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import colors from "../../utils/colors";
 import { getProviderStore } from "../../App";
 import { renderShortAddress } from "../../utils/address";
+import { observer } from "mobx-react";
 
-const Header = () => {
+const Header = observer(() => {
   const { t } = useTranslation();
 
   return (
@@ -33,7 +34,9 @@ const Header = () => {
           overlay={
             <Menu>
               <Menu.Item key={"logout"}>
-                <div onClick={getProviderStore.disconnect}>logout</div>
+                <div onClick={getProviderStore.disconnect}>
+                  {t("disconnect")}
+                </div>
               </Menu.Item>
             </Menu>
           }
@@ -49,7 +52,7 @@ const Header = () => {
             }}
           >
             {renderShortAddress(getProviderStore.currentAccount) ||
-              "not connected"}
+              t("notConnected")}
           </Button>
         </Dropdown>
       ) : (
@@ -63,11 +66,11 @@ const Header = () => {
           }}
         >
           {renderShortAddress(getProviderStore.currentAccount) ||
-            "not connected"}
+            t("notConnected")}
         </Button>
       )}
     </Layout.Header>
   );
-};
+});
 
 export default Header;

@@ -7,7 +7,8 @@ export interface ApiServiceResponse<T> extends AxiosResponse<T> {
 }
 
 export class ApiService {
-  axios: AxiosInstance;
+  protected axios: AxiosInstance;
+
   init = (baseURL: string = API_HUMANIQ_URL, headers = {}) => {
     this.axios = axios.create({ baseURL, headers });
 
@@ -20,11 +21,13 @@ export class ApiService {
       }
     );
   };
-  get = async (path: string, params?: any, config?: AxiosRequestConfig) =>
+
+  get = <T>(path: string, params?: any, config?: AxiosRequestConfig) =>
     this.axios.get(formatRoute(path, params), config) as Promise<
-      ApiServiceResponse<any>
+      ApiServiceResponse<T>
     >;
-  post = async (
+
+  post = <T>(
     path: string,
     body?: any,
     params?: any,
@@ -34,5 +37,17 @@ export class ApiService {
       params ? formatRoute(path, params) : path,
       body,
       config
-    ) as Promise<ApiServiceResponse<any>>;
+    ) as Promise<ApiServiceResponse<T>>;
+
+  put = <T>(
+    path: string,
+    body?: any,
+    params?: any,
+    config?: AxiosRequestConfig
+  ) =>
+    this.axios.put(
+      params ? formatRoute(path, params) : path,
+      body,
+      config
+    ) as Promise<ApiServiceResponse<T>>;
 }

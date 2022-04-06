@@ -11,5 +11,6 @@ export const HUMANIQ_ROUTES = {
   },
   DAPP: {
     POST_PROFILE_UPDATE: "/dapp/profile/update",
+    POST_PROFILE_PHOTO_UPDATE: "/photo/upload",
   },
 };

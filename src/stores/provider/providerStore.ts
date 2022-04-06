@@ -66,6 +66,7 @@ export class ProviderStore {
       Logcat.info("ERROR", e);
     }
   };
+
   disconnect = () => {
     this.currentAccount = null;
   };

@@ -10,9 +10,14 @@ import {
   API_HUMANIQ_URL,
   HUMANIQ_ROUTES,
 } from "../../constants/api";
-import { UserProfileResponse } from "../../services/apiService/responses";
+import {
+  UserPhotoUpdateResponse,
+  UserProfileResponse,
+  UserProfileUpdateResponse,
+} from "../../services/apiService/responses";
 import { DATE_FORMAT } from "../../constants/general";
 import { message } from "antd";
+import { ProfileUpdateRequest } from "../../services/apiService/requests";
 
 class User {
   firstName = "";
@@ -29,6 +34,7 @@ class User {
 
   photoURI = "";
   isFetching = false;
+  photoUploading = false;
 
   api: ApiService;
 
@@ -74,18 +80,48 @@ class User {
   };
 
   fetchProfile = async () => {
-    // some profile fetching
     this.isFetching = true;
-    const result = await this.api.get(
-      HUMANIQ_ROUTES.INTROSPECT.GET_SIGNUP_WALLET,
-      { wallet: getProviderStore.currentAccount }
-    );
-    if (result.isOk) {
-      this.setProfileUser(result.data);
-    } else {
-      Logcat.info("ERROR", result);
+    try {
+      const result = await this.api.get<UserProfileResponse>(
+        HUMANIQ_ROUTES.INTROSPECT.GET_SIGNUP_WALLET,
+        { wallet: getProviderStore.currentAccount }
+      );
+
+      if (result.isOk) {
+        this.setProfileUser(result.data);
+      } else {
+        Logcat.info("PROFILE FETCH ERROR", result);
+      }
+    } catch (e) {
+      Logcat.info("PROFILE FETCH ERROR", e);
+    } finally {
+      this.isFetching = false;
     }
-    this.isFetching = false;
+  };
+
+  @action
+  uploadPhoto = async (file: any) => {
+    this.photoUploading = true;
+    try {
+      const response = await this.api.post<UserPhotoUpdateResponse>(
+        HUMANIQ_ROUTES.DAPP.POST_PROFILE_PHOTO_UPDATE,
+        file,
+        null,
+        {
+          headers: { "Content-Type": "image/png" },
+        }
+      );
+
+      if (response.isOk) {
+        this.photoURI = response.data.url;
+      } else {
+        Logcat.info("PHOTO UPLOAD ERROR");
+      }
+    } catch (e) {
+      Logcat.info("PHOTO UPLOAD ERROR", e);
+    } finally {
+      this.photoUploading = false;
+    }
   };
 
   @action
@@ -116,8 +152,10 @@ class User {
 
     const timeStamp = new Date().getTime();
     const request = `ADDRESS ${getProviderStore.currentAccount} UPDATE PERSONAL INFO TIMESTAMP ${timeStamp}`;
+
     try {
       const result = await getProviderStore.personalMessageRequest(request);
+
       if (result) {
         const body = {
           query: {
@@ -131,14 +169,17 @@ class User {
               birthDate: this.birthDate,
               city: this.city,
               country: this.country,
+              photoUrl: this.photoURI,
             },
           },
           signature: result,
-        };
-        const response = await this.api.post(
+        } as ProfileUpdateRequest;
+
+        const response = await this.api.post<UserProfileUpdateResponse>(
           HUMANIQ_ROUTES.DAPP.POST_PROFILE_UPDATE,
           body
         );
+
         if (response.isOk) {
           message.success(t("userProfile.successUpdate"));
         } else {
