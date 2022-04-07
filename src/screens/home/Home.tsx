@@ -75,6 +75,8 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
 
           <input
             type="file"
+            accept="image/*"
+            id="file"
             ref={inputGalleryRef}
             onChange={view.onFileChoose}
             hidden
