@@ -1,22 +1,34 @@
 import React, { useEffect } from "react";
-import Header from "./components/header/header";
-import Footer from "./components/footer/footer";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import { Home } from "./screens/home/Home";
-import "antd/dist/antd.css";
-import "./App.scss";
+import "./App.sass";
 import routes from "./utils/routes";
 import NotFound from "./screens/404/404";
 import b from "buffer";
 import { observer } from "mobx-react";
-import { Layout } from "antd";
-import { WalletNotConnected } from "./components/app/WalletNotConnected";
-import { ProviderNotFound } from "./components/app/ProviderNotFound";
-import { ETHProvider } from "./stores/provider/providerStore";
+import { ETHProvider } from "./stores/providerStore";
+import { AlertProps, Snackbar } from "@mui/material";
+import { app } from "./stores/appStore/appStore";
+import MuiAlert from "@mui/material/Alert";
 
 window.Buffer = b.Buffer;
 
 export const getProviderStore = ETHProvider;
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return (
+    <MuiAlert
+      sx={{ borderColor: "white" }}
+      elevation={6}
+      ref={ref}
+      variant="outlined"
+      {...props}
+    />
+  );
+});
 
 export const App = observer(() => {
   useEffect(() => {
@@ -26,29 +38,29 @@ export const App = observer(() => {
   }, []);
 
   return (
-    <Layout className="App">
-      <Header />
+    <div className="App">
       {getProviderStore.initialized ? (
-        <>
-          {getProviderStore.hasProvider ? (
-            <>
-              {getProviderStore.currentAccount ? (
-                <Router>
-                  <Routes>
-                    <Route path={routes.home.path} element={<Home />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Router>
-              ) : (
-                <WalletNotConnected />
-              )}
-            </>
-          ) : (
-            <ProviderNotFound />
-          )}
-        </>
+        <Router>
+          <Routes>
+            <Route path={routes.home.path} element={<Home />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
       ) : null}
-      <Footer />
-    </Layout>
+      <Snackbar
+        open={app.alert.displayAlert}
+        autoHideDuration={6000}
+        onClose={app.alert.alertClose}
+        style={{ backgroundColor: "white" }}
+      >
+        <Alert
+          onClose={app.alert.alertClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {app.alert.alertMessage}
+        </Alert>
+      </Snackbar>
+    </div>
   );
 });

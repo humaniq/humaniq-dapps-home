@@ -1,25 +1,24 @@
 import { action, makeAutoObservable } from "mobx";
-import { getProviderStore } from "../../App";
-import { isEmpty } from "../../utils/textUtils";
-import Logcat from "../../utils/logcat";
+import { getProviderStore } from "../App";
+import { isEmpty } from "../utils/textUtils";
+import Logcat from "../utils/logcat";
 import { t } from "i18next";
-import dayjs from "dayjs";
-import { ApiService } from "../../services/apiService/apiService";
+import { ApiService } from "../services/apiService/apiService";
 import {
   API_HUMANIQ_TOKEN,
   API_HUMANIQ_URL,
   HUMANIQ_ROUTES,
-} from "../../constants/api";
-import {
-  UserPhotoUpdateResponse,
-  UserProfileResponse,
-  UserProfileUpdateResponse,
-} from "../../services/apiService/responses";
-import { DATE_FORMAT } from "../../constants/general";
-import { message } from "antd";
-import { ProfileUpdateRequest } from "../../services/apiService/requests";
+} from "../constants/api";
+import { UserProfileResponse } from "../services/apiService/responses";
+import dayjs from "dayjs";
+import { DATE_FORMAT } from "../constants/general";
+import { ALERT_TYPE } from "./appStore/alertStore";
+import { setAlert } from "../utils/alert";
 
-class User {
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
+
+export class User {
   firstName = "";
   lastName = "";
   country = "";
@@ -34,7 +33,7 @@ class User {
 
   photoURI = "";
   isFetching = false;
-  photoUploading = false;
+  isRegistered: boolean = false;
 
   api: ApiService;
 
@@ -45,13 +44,13 @@ class User {
   }
 
   get getBirthDate() {
-    return !isEmpty(this.birthDate)
-      ? dayjs(this.birthDate, DATE_FORMAT)
-      : dayjs();
+    return this.birthDate;
   }
 
-  get buttonDisabled() {
-    return this.isAnyFieldEmpty();
+  get fullName() {
+    return this.firstName || this.lastName
+      ? `${this.firstName} ${this.lastName}`
+      : "User Name";
   }
 
   setFirstName = (value: string) => {
@@ -75,52 +74,46 @@ class User {
   };
 
   setBirthDate = (value: string) => {
-    this.birthDateError = undefined;
     this.birthDate = value;
+    this.birthDateError =
+      this.birthDate.length === 10 &&
+      !dayjs(this.birthDate, DATE_FORMAT, true).isValid()
+        ? "Incorrect date format"
+        : undefined;
   };
 
   fetchProfile = async () => {
+    // some profile fetching
     this.isFetching = true;
-    try {
-      const result = await this.api.get<UserProfileResponse>(
-        HUMANIQ_ROUTES.INTROSPECT.GET_SIGNUP_WALLET,
-        { wallet: getProviderStore.currentAccount }
-      );
-
-      if (result.isOk) {
-        this.setProfileUser(result.data);
-      } else {
-        Logcat.info("PROFILE FETCH ERROR", result);
-      }
-    } catch (e) {
-      Logcat.info("PROFILE FETCH ERROR", e);
-    } finally {
-      this.isFetching = false;
+    const result = await this.api.get(
+      HUMANIQ_ROUTES.INTROSPECT.GET_SIGNUP_WALLET,
+      { wallet: getProviderStore.currentAccount }
+    );
+    if (result.isOk) {
+      this.isRegistered = true;
+      this.setProfileUser(result.data as any);
+    } else {
+      this.isRegistered = false;
+      this.onReset();
     }
+    this.isFetching = false;
   };
 
-  @action
-  uploadPhoto = async (file: any) => {
-    this.photoUploading = true;
-    try {
-      const response = await this.api.post<UserPhotoUpdateResponse>(
-        HUMANIQ_ROUTES.DAPP.POST_PROFILE_PHOTO_UPDATE,
-        file,
-        null,
-        {
-          headers: { "Content-Type": "image/png" },
-        }
-      );
-
-      if (response.isOk) {
-        this.photoURI = response.data.url;
-      } else {
-        Logcat.info("PHOTO UPLOAD ERROR");
+  updatePhoto = async (file: File) => {
+    const result = await this.api.post<{ url: string }>(
+      HUMANIQ_ROUTES.PHOTO.POST_PHOTO,
+      file,
+      {},
+      {
+        headers: {
+          "Content-Type": file.type,
+        },
       }
-    } catch (e) {
-      Logcat.info("PHOTO UPLOAD ERROR", e);
-    } finally {
-      this.photoUploading = false;
+    );
+    if (result.isOk) {
+      this.photoURI = result.data.url;
+    } else {
+      Logcat.info("ERROR", result);
     }
   };
 
@@ -146,16 +139,14 @@ class User {
       this.birthDateError = t("emptyField");
     }
 
-    if (this.isAnyFieldEmpty()) {
+    if (this.isAnyFieldEmpty) {
       return;
     }
 
     const timeStamp = new Date().getTime();
     const request = `ADDRESS ${getProviderStore.currentAccount} UPDATE PERSONAL INFO TIMESTAMP ${timeStamp}`;
-
     try {
       const result = await getProviderStore.personalMessageRequest(request);
-
       if (result) {
         const body = {
           query: {
@@ -166,29 +157,34 @@ class User {
             payload: {
               lastName: this.lastName,
               firstName: this.firstName,
-              birthDate: this.birthDate,
+              birthDate: dayjs(this.birthDate, DATE_FORMAT).format(
+                "DD.MM.YYYY"
+              ),
               city: this.city,
               country: this.country,
-              photoUrl: this.photoURI,
+              photoURI: this.photoURI,
             },
           },
           signature: result,
-        } as ProfileUpdateRequest;
+        };
 
-        const response = await this.api.post<UserProfileUpdateResponse>(
+        const response = await this.api.post(
           HUMANIQ_ROUTES.DAPP.POST_PROFILE_UPDATE,
           body
         );
-
         if (response.isOk) {
-          message.success(t("userProfile.successUpdate"));
+          setTimeout(() => {
+            setAlert("Your profile successfuly updated");
+          }, 2000);
+          return true;
         } else {
-          message.error(t("userProfile.errorUpdate"));
+          setAlert("Error", ALERT_TYPE.ERROR);
           Logcat.info("ERROR", response);
+          return false;
         }
       }
     } catch (e) {
-      message.error(t("userProfile.errorSign"));
+      setAlert("Error", ALERT_TYPE.ERROR);
       Logcat.info(e);
     }
   };
@@ -213,12 +209,17 @@ class User {
     this.photoURI = "";
   };
 
-  isAnyFieldEmpty = () =>
-    isEmpty(this.firstName) ||
-    isEmpty(this.lastName) ||
-    isEmpty(this.country) ||
-    isEmpty(this.city) ||
-    isEmpty(this.birthDate);
+  get isAnyFieldEmpty() {
+    return (
+      isEmpty(this.firstName) ||
+      isEmpty(this.lastName) ||
+      isEmpty(this.country) ||
+      isEmpty(this.city) ||
+      isEmpty(this.birthDate) ||
+      this.birthDate.length !== 10 ||
+      !!this.birthDateError
+    );
+  }
 }
 
 export const UserStore = new User();
