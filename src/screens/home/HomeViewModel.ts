@@ -1,19 +1,29 @@
 import { RefObject } from "react";
 import { makeAutoObservable, reaction } from "mobx";
+import { UserStore, UserStore as user } from "../../stores/userStore";
+import { ETHProvider } from "../../stores/providerStore";
+import { getProviderStore } from "../../App";
 import Logcat from "../../utils/logcat";
-import { UserStore, UserStore as user } from "../../stores/user/userStore";
-import { ETHProvider } from "../../stores/provider/providerStore";
 
 export class HomeViewModel {
-  private galleryRef?: RefObject<HTMLInputElement>;
+  galleryRef?: RefObject<HTMLInputElement>;
+
+  isEditMode = false;
+  initialized = false;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
+  backClick = async () => {
+    user.onReset();
+    this.isEditMode = false;
+    await user.fetchProfile();
+  };
+
   init = async (ref?: RefObject<HTMLInputElement>) => {
     this.galleryRef = ref;
-    await user.fetchProfile();
+    ETHProvider.currentAccount && (await user.fetchProfile());
     reaction(
       () => ETHProvider.currentAccount,
       async (val) => {
@@ -24,17 +34,35 @@ export class HomeViewModel {
         }
       }
     );
+    this.initialized = true;
+  };
+
+  toggleEditOrSave = async () => {
+    if (this.isEditMode) {
+      const result = await user.onSubmit();
+      if (result) {
+        this.isEditMode = !this.isEditMode;
+      }
+    } else {
+      this.isEditMode = !this.isEditMode;
+    }
   };
 
   openFileExplorer = () => {
     this.galleryRef?.current?.click();
   };
 
-  onFileChoose = (event: any) => {
+  onFileChoose = async (event: any) => {
     event.preventDefault();
-    let file = event.target.files[0];
-    Logcat.log("file...", file);
-    // let form = new FormData();
-    // form.append('file', this.state.file);
+    await user.updatePhoto(event.target.files[0]);
+  };
+
+  toggleDialogOrDisconnectWallet = () => {
+    if (!getProviderStore.currentAccount) {
+      getProviderStore.connectDialog = !getProviderStore.connectDialog;
+    } else {
+      this.isEditMode = false;
+      getProviderStore.disconnect();
+    }
   };
 }

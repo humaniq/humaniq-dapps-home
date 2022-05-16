@@ -1,5 +1,9 @@
 {
   "appName": "Humaniq Identity",
+  "humaniqName": "Humaniq wallet",
+  "walletConnectName": "WalletConnect",
+  "web3Name": "WEB3",
+  "later": "May be later",
   "firstName": "First name",
   "lastName": "Last name",
   "update": "Update",
@@ -18,5 +22,10 @@
     "successUpdate": "Your profile successfully updated",
     "errorUpdate": "Error update profile",
     "errorSign": "Sign message was rejected"
-  }
+  },
+  "signWithWallet": "Sign with wallet",
+  "egitProfile": "Edit profile",
+  "connectWalletDialog": "Connect wallet",
+  "disconnect": "Disconnect",
+  "chooseConnection": "Choose connection method"
 }

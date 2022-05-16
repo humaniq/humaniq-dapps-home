@@ -1,20 +1,24 @@
 import { action, makeAutoObservable } from "mobx";
-import { getProviderStore } from "../../App";
-import { isEmpty } from "../../utils/textUtils";
-import Logcat from "../../utils/logcat";
+import { getProviderStore } from "../App";
+import { isEmpty } from "../utils/textUtils";
+import Logcat from "../utils/logcat";
 import { t } from "i18next";
-import dayjs from "dayjs";
-import { ApiService } from "../../services/apiService/apiService";
+import { ApiService } from "../services/apiService/apiService";
 import {
   API_HUMANIQ_TOKEN,
   API_HUMANIQ_URL,
   HUMANIQ_ROUTES,
-} from "../../constants/api";
-import { UserProfileResponse } from "../../services/apiService/responses";
-import { DATE_FORMAT } from "../../constants/general";
-import { message } from "antd";
+} from "../constants/api";
+import { UserProfileResponse } from "../services/apiService/responses";
+import dayjs from "dayjs";
+import { DATE_FORMAT } from "../constants/general";
+import { ALERT_TYPE } from "./appStore/alertStore";
+import { setAlert } from "../utils/alert";
 
-class User {
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
+
+export class User {
   firstName = "";
   lastName = "";
   country = "";
@@ -29,6 +33,7 @@ class User {
 
   photoURI = "";
   isFetching = false;
+  isRegistered: boolean = false;
 
   api: ApiService;
 
@@ -39,13 +44,13 @@ class User {
   }
 
   get getBirthDate() {
-    return !isEmpty(this.birthDate)
-      ? dayjs(this.birthDate, DATE_FORMAT)
-      : dayjs();
+    return this.birthDate;
   }
 
-  get buttonDisabled() {
-    return this.isAnyFieldEmpty();
+  get fullName() {
+    return this.firstName || this.lastName
+      ? `${this.firstName} ${this.lastName}`
+      : "User Name";
   }
 
   setFirstName = (value: string) => {
@@ -69,8 +74,12 @@ class User {
   };
 
   setBirthDate = (value: string) => {
-    this.birthDateError = undefined;
     this.birthDate = value;
+    this.birthDateError =
+      this.birthDate.length === 10 &&
+      !dayjs(this.birthDate, DATE_FORMAT, true).isValid()
+        ? "Incorrect date format"
+        : undefined;
   };
 
   fetchProfile = async () => {
@@ -81,11 +90,31 @@ class User {
       { wallet: getProviderStore.currentAccount }
     );
     if (result.isOk) {
+      this.isRegistered = true;
       this.setProfileUser(result.data);
+    } else {
+      this.isRegistered = false;
+      this.onReset();
+    }
+    this.isFetching = false;
+  };
+
+  updatePhoto = async (file: File) => {
+    const result = await this.api.post(
+      HUMANIQ_ROUTES.PHOTO.POST_PHOTO,
+      file,
+      {},
+      {
+        headers: {
+          "Content-Type": file.type,
+        },
+      }
+    );
+    if (result.isOk) {
+      this.photoURI = result.data.url;
     } else {
       Logcat.info("ERROR", result);
     }
-    this.isFetching = false;
   };
 
   @action
@@ -110,7 +139,7 @@ class User {
       this.birthDateError = t("emptyField");
     }
 
-    if (this.isAnyFieldEmpty()) {
+    if (this.isAnyFieldEmpty) {
       return;
     }
 
@@ -128,26 +157,34 @@ class User {
             payload: {
               lastName: this.lastName,
               firstName: this.firstName,
-              birthDate: this.birthDate,
+              birthDate: dayjs(this.birthDate, DATE_FORMAT).format(
+                "DD.MM.YYYY"
+              ),
               city: this.city,
               country: this.country,
+              photoURI: this.photoURI,
             },
           },
           signature: result,
         };
+
         const response = await this.api.post(
           HUMANIQ_ROUTES.DAPP.POST_PROFILE_UPDATE,
           body
         );
         if (response.isOk) {
-          message.success(t("userProfile.successUpdate"));
+          setTimeout(() => {
+            setAlert("Your profile successfuly updated");
+          }, 2000);
+          return true;
         } else {
-          message.error(t("userProfile.errorUpdate"));
+          setAlert("Error", ALERT_TYPE.ERROR);
           Logcat.info("ERROR", response);
+          return false;
         }
       }
     } catch (e) {
-      message.error(t("userProfile.errorSign"));
+      setAlert("Error", ALERT_TYPE.ERROR);
       Logcat.info(e);
     }
   };
@@ -172,12 +209,17 @@ class User {
     this.photoURI = "";
   };
 
-  isAnyFieldEmpty = () =>
-    isEmpty(this.firstName) ||
-    isEmpty(this.lastName) ||
-    isEmpty(this.country) ||
-    isEmpty(this.city) ||
-    isEmpty(this.birthDate);
+  get isAnyFieldEmpty() {
+    return (
+      isEmpty(this.firstName) ||
+      isEmpty(this.lastName) ||
+      isEmpty(this.country) ||
+      isEmpty(this.city) ||
+      isEmpty(this.birthDate) ||
+      this.birthDate.length !== 10 ||
+      !!this.birthDateError
+    );
+  }
 }
 
 export const UserStore = new User();
