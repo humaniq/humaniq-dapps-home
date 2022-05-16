@@ -8,7 +8,7 @@ class Logcat {
   }
 
   static error(msg: any, err: any, ...optionalParams: any[]) {
-    console.error(msg, err);
+    console.error(msg, err, optionalParams);
   }
 
   static info(...args: any[]) {
@@ -16,7 +16,7 @@ class Logcat {
   }
 
   static warning(msg: any, ...optionalParams: any[]) {
-    console.warn(msg);
+    console.warn(msg, optionalParams);
   }
 }
 
