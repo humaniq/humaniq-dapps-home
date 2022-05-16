@@ -91,7 +91,7 @@ export class User {
     );
     if (result.isOk) {
       this.isRegistered = true;
-      this.setProfileUser(result.data);
+      this.setProfileUser(result.data as any);
     } else {
       this.isRegistered = false;
       this.onReset();
@@ -100,7 +100,7 @@ export class User {
   };
 
   updatePhoto = async (file: File) => {
-    const result = await this.api.post(
+    const result = await this.api.post<{ url: string }>(
       HUMANIQ_ROUTES.PHOTO.POST_PHOTO,
       file,
       {},
