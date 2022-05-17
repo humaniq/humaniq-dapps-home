@@ -27,7 +27,7 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
   }, [view]);
 
   return (
-    <div className="container">
+    <div className={view.isEditMode ? "container edit" : "container"}>
       <div className={"main"}>
         {!view.isEditMode && (
           <HumaniqIdCard
