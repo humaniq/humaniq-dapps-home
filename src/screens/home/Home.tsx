@@ -6,21 +6,12 @@ import { withStore } from "../../utils/hoc";
 import "./Home.sass";
 import { HumaniqIdCard } from "../../components/humaniq-id-card/HumaniqIdCard";
 import { getProviderStore } from "../../App";
-import {
-  Avatar,
-  Box,
-  Button,
-  Paper,
-  Stack,
-  SwipeableDrawer,
-} from "@mui/material";
-import HumaniqLogo from "../../static/images/humaniq-logo.svg";
-import WCLogo from "../../static/images/wallet-connect-logo.svg";
-import Web3Logo from "../../static/images/web3-logo.svg";
-import { PROVIDERS } from "../../stores/providerStore";
+import { Button } from "@mui/material";
 import { NotRegisteredMessage } from "../../components/not-registered-message/NotRegisteredMessage";
 import { HumaniqIdForm } from "../../components/humaniq-id-form/HumaniqIdForm";
 import { t } from "i18next";
+import { ConnectDialog } from "../../components/dialogs/ConnectDialog";
+import { DisconnectDialog } from "../../components/dialogs/DisconnectDialog";
 
 export interface HomeScreenInterface {
   store: HomeViewModel;
@@ -61,84 +52,35 @@ const HomeImpl = ({ store: view }: HomeScreenInterface) => {
             inputRef={view.galleryRef}
           />
         )}
-        {getProviderStore.currentAccount &&
-          !user.isRegistered &&
-          !view.isEditMode && <NotRegisteredMessage />}
+        {!view.isEditMode && (
+          <NotRegisteredMessage
+            isRegistered={user.isRegistered}
+            isConnected={getProviderStore.currentAccount}
+          />
+        )}
         {getProviderStore.currentAccount && (
           <Button
             onClick={view.toggleEditOrSave}
-            className={"btn-2"}
+            className={view.isEditMode ? "btn" : "btn-2"}
             variant={"contained"}
             disabled={view.isEditMode ? user.isAnyFieldEmpty : false}
           >
             {view.isEditMode ? t("signWithWallet") : t("egitProfile")}
           </Button>
         )}
-        <Button
-          onClick={view.toggleDialogOrDisconnectWallet}
-          className={"btn"}
-          variant={!getProviderStore.currentAccount ? "contained" : "text"}
-        >
-          {!getProviderStore.currentAccount
-            ? t("connectWalletDialog")
-            : t("disconnect")}
-        </Button>
-        <SwipeableDrawer
-          anchor={"bottom"}
-          open={getProviderStore.connectDialog}
-          onClose={() => (getProviderStore.connectDialog = false)}
-          onOpen={getProviderStore.toggleConnectDialog}
-          style={{ borderRadius: 16 }}
-        >
-          <Box
-            className={"drawer-container"}
-            sx={{ width: "auto", minHeight: 300 }}
+        {!view.isEditMode && (
+          <Button
+            onClick={view.toggleDialogOrDisconnectWallet}
+            className={"btn"}
+            variant={!getProviderStore.currentAccount ? "contained" : "text"}
           >
-            <h1 className={"tittle"}>{t("connectWalletDialog")}</h1>
-            <div className={"description"}>{t("chooseConnection")}</div>
-            <Stack className={"stack"}>
-              <Paper
-                elevation={0}
-                className={"paper"}
-                onClick={() => getProviderStore.setProvider(PROVIDERS.WEB3)}
-              >
-                <Avatar className={"avatar"}>
-                  <img alt={"humaniq"} src={HumaniqLogo} />
-                </Avatar>
-                <span>{t("humaniqName")}</span>
-              </Paper>
-              <Paper
-                elevation={0}
-                className={"paper"}
-                onClick={() => getProviderStore.setProvider(PROVIDERS.WC)}
-              >
-                <Avatar className={"avatar"}>
-                  <img src={WCLogo} alt={"wallet-connect"} />
-                </Avatar>
-                <span>{t("walletConnectName")}</span>
-              </Paper>
-              <Paper
-                elevation={0}
-                className={"paper"}
-                onClick={() => getProviderStore.setProvider(PROVIDERS.WEB3)}
-              >
-                <Avatar className={"avatar"}>
-                  <img alt={"web3"} src={Web3Logo} />
-                </Avatar>
-                <span>{t("web3Name")}</span>
-              </Paper>
-            </Stack>
-            <div className={"btn-container"}>
-              <Button
-                onClick={getProviderStore.toggleConnectDialog}
-                className={"btn"}
-                variant={"text"}
-              >
-                {t("later")}
-              </Button>
-            </div>
-          </Box>
-        </SwipeableDrawer>
+            {!getProviderStore.currentAccount
+              ? t("connectWalletDialog")
+              : t("disconnect")}
+          </Button>
+        )}
+        <ConnectDialog />
+        <DisconnectDialog />
       </div>
     </div>
   );
