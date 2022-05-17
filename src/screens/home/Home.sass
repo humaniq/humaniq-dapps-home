@@ -8,6 +8,8 @@
   background: $background-color
   position: relative
   padding: 16px
+  &.edit
+    background-color: white
   .main
     display: flex
     text-align: center
@@ -16,7 +18,6 @@
     @include mq($until: tablet)
       width: 100%
   .btn
-    border-radius: 12px
     position: absolute
     bottom: 16px
     width: 800px

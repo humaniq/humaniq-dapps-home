@@ -1,6 +1,19 @@
+@import "colors"
+
 .MuiPaper-elevation
   border-top-left-radius: 16px !important
   border-top-right-radius: 16px !important
 
 .MuiAlert-root
   border-color: transparent !important
+
+.MuiButton-root
+  text-transform: none !important
+  border-radius: 12px !important
+  font-size: 16px !important
+  font-weight: 500 !important
+  box-shadow: none !important
+  &.MuiButton-containedPrimary
+    background-color: $blue-primary
+  &.MuiButton-textPrimary
+    color: $blue-primary
