@@ -16,6 +16,7 @@ export class ProviderStore {
   currentProvider: any;
   chainId: number;
   connectDialog = false;
+  disconnectDialog = false;
   connectedProvider: PROVIDERS;
 
   constructor() {
@@ -115,6 +116,7 @@ export class ProviderStore {
   };
   disconnect = () => {
     this.currentAccount = null;
+    this.disconnectDialog = false;
     try {
       localStorage.removeItem("connected");
       localStorage.removeItem("walletconnect");
@@ -123,7 +125,10 @@ export class ProviderStore {
     }
   };
   toggleConnectDialog = () => {
-    getProviderStore.connectDialog = !getProviderStore.connectDialog;
+    this.connectDialog = !this.connectDialog;
+  };
+  toggleDisconnectDialog = () => {
+    this.disconnectDialog = !this.disconnectDialog;
   };
 }
 

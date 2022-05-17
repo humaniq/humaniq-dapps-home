@@ -58,7 +58,7 @@ export const HumaniqIdForm: React.FC<HumaniqIdFormProps> = observer(
           style={{ display: "none" }}
         />
         <IconButton className={"back-icon"} onClick={onBackClick}>
-          <ArrowBackIcon sx={{ fontSize: 28 }} />
+          <ArrowBackIcon sx={{ fontSize: 28, color: "#001833" }} />
         </IconButton>
         <div className={"image-container"} onClick={openFileExplorer}>
           <Avatar sx={{ width: 80, height: 80 }} src={user.photoURI} />

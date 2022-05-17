@@ -62,7 +62,8 @@ export class HomeViewModel {
       getProviderStore.connectDialog = !getProviderStore.connectDialog;
     } else {
       this.isEditMode = false;
-      getProviderStore.disconnect();
+      getProviderStore.toggleDisconnectDialog();
+      // getProviderStore.disconnect();
     }
   };
 }
