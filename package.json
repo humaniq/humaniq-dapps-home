@@ -1,7 +1,7 @@
 {
   "name": "humaniq-identuty-dapp",
   "version": "0.1.0",
-  "homepage": "https://humaniq.github.io/humaniq-identity-dapp",
+  "homepage": "https://idapp.humaniq.com/",
   "private": false,
   "dependencies": {
     "@emotion/react": "^11.9.0",
