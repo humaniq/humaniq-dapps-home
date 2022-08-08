@@ -131,5 +131,3 @@ export class ProviderStore {
     this.disconnectDialog = !this.disconnectDialog;
   };
 }
-
-export const ETHProvider = new ProviderStore();

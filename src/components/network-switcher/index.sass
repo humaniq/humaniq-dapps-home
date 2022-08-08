@@ -1,0 +1,15 @@
+@import "src/styles/vars"
+
+.switcher-container
+  display: flex
+  justify-content: center
+  padding-top: 8px
+  font-size: 16px
+  font-weight: 500
+  .col
+    padding: 5px
+    color: transparentize($black-text, 0.8)
+    border-bottom: 2px solid transparentize($black-text, 0.8)
+    &.selected
+      color: $black-text
+      border-bottom: 2px solid $black-text

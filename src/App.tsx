@@ -6,14 +6,17 @@ import routes from "./utils/routes";
 import NotFound from "./screens/404/404";
 import b from "buffer";
 import { observer } from "mobx-react";
-import { ETHProvider } from "./stores/providerStore";
+import { ProviderStore } from "./stores/providerStore";
 import { AlertProps, Snackbar } from "@mui/material";
 import { app } from "./stores/appStore/appStore";
 import MuiAlert from "@mui/material/Alert";
+// @ts-ignore
+import { AnimatedRoute } from "react-router-transition";
+import { Category } from "./screens/category/Category";
 
 window.Buffer = b.Buffer;
 
-export const getProviderStore = ETHProvider;
+export const getProviderStore = new ProviderStore();
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -44,6 +47,7 @@ export const App = observer(() => {
           <Routes>
             <Route path={routes.home.path} element={<Home />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/:category" element={<Category />} />
           </Routes>
         </Router>
       ) : null}
