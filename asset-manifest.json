@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "./static/css/main.3d426781.chunk.css",
+    "main.js": "./static/js/main.00edf423.chunk.js",
+    "main.js.map": "./static/js/main.00edf423.chunk.js.map",
+    "runtime-main.js": "./static/js/runtime-main.1c51d83d.js",
+    "runtime-main.js.map": "./static/js/runtime-main.1c51d83d.js.map",
+    "static/js/2.9868b9be.chunk.js": "./static/js/2.9868b9be.chunk.js",
+    "static/js/2.9868b9be.chunk.js.map": "./static/js/2.9868b9be.chunk.js.map",
+    "index.html": "./index.html",
+    "static/css/main.3d426781.chunk.css.map": "./static/css/main.3d426781.chunk.css.map",
+    "static/js/2.9868b9be.chunk.js.LICENSE.txt": "./static/js/2.9868b9be.chunk.js.LICENSE.txt",
+    "static/media/arrow-down.b3b353fa.svg": "./static/media/arrow-down.b3b353fa.svg",
+    "static/media/back-icon.8f957f1b.svg": "./static/media/back-icon.8f957f1b.svg",
+    "static/media/close-icon.7fad7e62.svg": "./static/media/close-icon.7fad7e62.svg",
+    "static/media/humaniq-logo.cb2c62db.svg": "./static/media/humaniq-logo.cb2c62db.svg",
+    "static/media/logo-wordmark.22da6c60.svg": "./static/media/logo-wordmark.22da6c60.svg",
+    "static/media/wallet-connect-logo.6fa61a47.svg": "./static/media/wallet-connect-logo.6fa61a47.svg",
+    "static/media/web3-logo.9ae2b06d.svg": "./static/media/web3-logo.9ae2b06d.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.1c51d83d.js",
+    "static/js/2.9868b9be.chunk.js",
+    "static/css/main.3d426781.chunk.css",
+    "static/js/main.00edf423.chunk.js"
+  ]
+}
