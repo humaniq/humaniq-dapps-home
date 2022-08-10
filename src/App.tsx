@@ -13,6 +13,7 @@ import MuiAlert from "@mui/material/Alert";
 // @ts-ignore
 import { AnimatedRoute } from "react-router-transition";
 import { Category } from "./screens/category/Category";
+import Done from "./static/images/done.svg";
 
 window.Buffer = b.Buffer;
 
@@ -61,7 +62,9 @@ export const App = observer(() => {
           onClose={app.alert.alertClose}
           severity="success"
           sx={{ width: "100%" }}
+          icon={false}
         >
+          <img className={"alert-img"} src={"./images/done.svg"} />
           {app.alert.alertMessage}
         </Alert>
       </Snackbar>
