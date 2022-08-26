@@ -37,7 +37,7 @@ const categories = [
         isEth: false,
       },
       {
-        name: "Education bot",
+        name: "Wealth in 7 steps",
         url: "https://t.me/ed_humaniq_bot",
         description: "Courses that changed the lives of millions of people",
         icon: "./images/dapps/education-bot.png",
