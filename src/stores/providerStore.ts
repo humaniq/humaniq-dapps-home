@@ -2,7 +2,6 @@ import { makeAutoObservable } from "mobx";
 import Logcat from "../utils/logcat";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { rpc } from "../constants/api";
-import { getProviderStore } from "../App";
 
 export enum PROVIDERS {
   WEB3 = "WEB3",

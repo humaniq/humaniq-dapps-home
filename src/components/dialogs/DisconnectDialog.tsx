@@ -11,6 +11,7 @@ export const DisconnectDialog: React.FC<DisconnectDialogProps> = observer(
   () => {
     return (
       <SwipeableDrawer
+        disableSwipeToOpen={true}
         anchor={"bottom"}
         open={getProviderStore.disconnectDialog}
         onClose={() => (getProviderStore.disconnectDialog = false)}
