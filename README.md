@@ -1,1 +1,1 @@
-Humaniq Identity Dapp
+Humaniq dApps home page

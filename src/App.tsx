@@ -13,7 +13,6 @@ import MuiAlert from "@mui/material/Alert";
 // @ts-ignore
 import { AnimatedRoute } from "react-router-transition";
 import { Category } from "./screens/category/Category";
-import Done from "./static/images/done.svg";
 
 window.Buffer = b.Buffer;
 

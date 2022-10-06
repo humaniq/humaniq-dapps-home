@@ -21,6 +21,7 @@ export interface ConnectDialogProps {}
 export const ConnectDialog: React.FC<ConnectDialogProps> = observer(() => {
   return (
     <SwipeableDrawer
+      disableSwipeToOpen={true}
       anchor={"bottom"}
       open={getProviderStore.connectDialog}
       onClose={() => (getProviderStore.connectDialog = false)}
